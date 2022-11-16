@@ -7,16 +7,20 @@ import java.util.Scanner;
 
 public class RunCode {
     public static int index = 0;
+    public static Student student = new Student();
+    public static int indexStudent = 0;
     public static void main(String[] args) throws IOException {
         var input = new Scanner(System.in);
         ArrayList<Subject> subjects = new ArrayList<>();
+
+        ArrayList<Student> students  = new ArrayList<>();
         boolean check = true;
         Subject subject = new Subject();
-//        đọc dữ liêụ từ file
-        File file = new File("SUB.DAT");
-        Scanner readFile = new Scanner(file);
-        while(readFile.hasNextLine()) {
-            String words = readFile.nextLine();
+//        đọc dữ liêụ từ file cua subject
+        File fileSubject = new File("SUB.DAT");
+        Scanner readFileSubject = new Scanner(fileSubject);
+        while(readFileSubject.hasNextLine()) {
+            String words = readFileSubject.nextLine();
             var str = words.split(";");
             subject.setId();
             String id = subject.getId();
@@ -27,7 +31,27 @@ public class RunCode {
             int tes = Integer.parseInt(str[4]);
             subjects.add(new Subject(id,name,credit,les,tes));
         }
-        readFile.close();
+        readFileSubject.close();
+
+//        đọc file từ file cửa student;
+        File fileStudent = new File("STU.DAT");
+        Scanner readFileStudent = new Scanner(fileStudent);
+        while(readFileStudent.hasNextLine()) {
+            var words1 = readFileStudent.nextLine();
+            var str1 = words1.split(";");
+            String id = str1[0];
+            String fullName = str1[1];
+            String address = str1[2];
+            String email = str1[3];
+            String gender = str1[4];
+            String phone = str1[5];
+            String nameclass = str1[6];
+            String major = str1[7];
+            students.add(new Student(id,fullName,address,email,gender,phone,nameclass,major));
+
+        }
+        readFileSubject.close();
+
         while(check) {
             showMenu();
             System.out.println("Mời bạn lựa chọn: ");
@@ -70,13 +94,48 @@ public class RunCode {
                                 check1 = false;
                         }
                     }
-
-
-
                 case 2:
-
+                    boolean check2 = true;
+                    while (check2) {
+                        showMenuStudent();
+                        System.out.println("Mời bạn chọn: ");
+                        int k = input.nextInt();
+                        input.nextLine();
+                        switch (k) {
+                            case 1:
+                                students.add(addStudent(input));
+                                break;
+                            case 2:
+                                FileWriter fileWriter = new FileWriter("STU.DAT");
+                                PrintWriter printWriter = new PrintWriter(fileWriter,true);
+                                for (int i = 0; i < students.size(); i++) {
+                                    var item = students.get(i);
+                                    printWriter.printf("%s;%s;%s;%s;%s;%s;%s;%s\n",item.getId(),item.getFullName(),item.getAddress(),item.getEmail(),item.getGender(),item.getPhone(),item.getNameClass(),item.getMajor());
+                                }
+                                printWriter.close();
+                                fileWriter.close();
+                                System.out.println("===>Lưu thành công <===");
+                                break;
+                            case 3:
+                                showStudent(students);
+                                break;
+                            case 4:
+                                setStudent(input,students);
+                                break;
+                            case 5:
+                                break;
+                            default:
+                                System.out.println("===> KHÔNG HỢP LỆ <===");
+                                check2 = false;
+                        }
+                    }
                 case 3:
+                    if(subjects.size() > 0) {
 
+
+                    } else {
+                        System.out.println("===> Tạo lớp học thất bại <===");
+                    }
                 default:
                     System.out.println("Bạn đã thoát");
             }
@@ -173,7 +232,7 @@ public class RunCode {
         System.out.println("Khác.Thoát.");
     }
 
-    private static Subject findSubjectId(String id, ArrayList<Subject> subjects) {
+    public static Subject findSubjectId(String id, ArrayList<Subject> subjects) {
         for(int i = 0; i < subjects.size(); i++) {
             if(id.compareTo(subjects.get(i).getId()) == 0) {
                 index = i;
@@ -182,4 +241,149 @@ public class RunCode {
         }
         return null;
     }
+
+
+
+
+
+
+
+//    CHỨC NĂNG CỦA SINH VIÊN
+    public static Student addStudent(Scanner input) {
+        System.out.println("Mã sinh viên: ");
+        student.setId();
+        String id = student.getId();
+        Student.idN ++;
+        System.out.println(id);
+        System.out.println("Họ và tên: ");
+        String fullName = input.nextLine();
+
+        System.out.println("Địa chỉ: ");
+        String address = input.nextLine();
+
+        System.out.println("Email: ");
+        String email = input.nextLine();
+        System.out.println("Giới tính: ");
+        var gender = input.nextLine();
+        System.out.println("Số điện thoại: ");
+        var phone = input.nextLine();
+        System.out.println("Tên lớp: ");
+        var nameClass = input.nextLine();
+        System.out.println("Chuyên ngành: ");
+        var major = input.nextLine();
+
+        return new Student(id,fullName,address,email,gender,phone,nameClass,major);
+
+    }
+
+    public static void showStudent(ArrayList<Student> students) {
+        System.out.printf("%-15s%-20s%-38s%-25s%-15s%-15s%-18s%-15s\n","Mã Sinh Viên","Họ Và Tên","Địa Chỉ","Email","Giới Tính","Số Điện Thoại","Tên Lớp","Chuyên Ngành");
+        for (var item :
+                students) {
+            showListStudent(item);
+        }
+    }
+
+    private static void showListStudent(Student item) {
+        System.out.printf("%-15s%-20s%-38s%-25s%-15s%-15s%-18s%-15s\n",item.getId(),item.getFullName(),item.getAddress(),item.getEmail(),item.getGender(),item.getPhone(),item.getNameClass(),item.getMajor());
+    }
+
+    public static void showMenuSetStudent() {
+        System.out.println("1.Sửa Họ và tên.                            2.Sửa địa chỉ.");
+        System.out.println("3.Sửa email.                                4.Sửa giới tính.        "                                   );
+        System.out.println("5.Sửa số điện thoại.                        6.Sửa tên lớp.");
+        System.out.println("7.Sửa chuyên ngành.                         Khác.Thoát."            );
+
+    }
+
+    public static void setStudent(Scanner input,ArrayList<Student> students) {
+        System.out.println("Mã sinh viên: ");
+        String id = input.nextLine();
+
+        var student = findStudentOfId(id,students);// STOPSHIP: 11/16/2022
+        if(student != null) {
+            boolean check = true;
+            while(check) {
+                showMenuSetStudent();
+                System.out.println("===> Mời bạn chọn: <===");
+                int choice = input.nextInt();
+                input.nextLine();
+
+                switch (choice) {
+                    case 1:
+                        System.out.println("Họ và tên: ");
+                        String name = input.nextLine();
+                        students.get(indexStudent).setFullName(name);
+                        break;
+                    case 2:
+                        System.out.println("Địa chỉ: ");
+                        String address = input.nextLine();
+                        students.get(indexStudent).setAddress(address);
+                        break;
+                    case 3:
+                        System.out.println("Email: ");
+                        String email = input.nextLine();
+                        students.get(indexStudent).setEmail(email);
+                        break;
+                    case 4:
+                        System.out.println("Giới tính: ");
+                        String gender = input.nextLine();
+                        students.get(indexStudent).setGender(gender);
+                        break;
+                    case 5:
+                        System.out.println("Số điện thoại: ");
+                        String phone = input.nextLine();
+                        students.get(indexStudent).setPhone(phone);
+                        break;
+                    case 6:
+                        System.out.println("Lớp: ");
+                        String classN = input.nextLine();
+                        students.get(indexStudent).setNameClass(classN);
+                        break;
+                    case 7:
+                        System.out.println("Chuyên ngành: ");
+                        String major = input.nextLine();
+                        students.get(indexStudent).setMajor(major);
+                        break;
+                    default:
+                        System.out.println("===> SAI CHỨC NĂNG <===");
+                        check = false;
+                }
+            }
+        } else {
+            System.out.println("===>Mã không hợp lệ<===");
+        }
+    }
+    public static void showMenuStudent() {
+        System.out.println("1.Thêm mới sinh viên.");
+        System.out.println("2.Lưu sinh viên vào file.");
+        System.out.println("3.Hiển thị danh sách sinh viên.");
+        System.out.println("4.Sửa thông tin sinh viên.");
+        System.out.println("5.Xóa sinh viên.");
+    }
+
+    public static Student findStudentOfId(String id, ArrayList<Student> students) {
+        for (int i = 0; i < students.size(); i++) {
+            if(id.compareTo(students.get(i).getId()) == 0 ) {
+                indexStudent = i;
+                return students.get(i);
+            }
+        }
+        return null;
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
 }
