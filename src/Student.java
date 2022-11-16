@@ -25,6 +25,16 @@ public class Student {
 
     }
 
+    public Student(String id, String fullName, String email, String gender, String nameClass, String major) {
+        this.id = id;
+        this.fullName = new FullName();
+        setFullName(fullName);
+        this.email = email;
+        this.gender = gender;
+        this.nameClass = nameClass;
+        this.major = major;
+    }
+
     public Student(String id, String fullName, String address,
                    String email, String gender, String phone,
                    String nameClass, String major) {
@@ -62,6 +72,7 @@ public class Student {
 
 
     }
+
 
     public String getAddress() {
         return address;
