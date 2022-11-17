@@ -1,14 +1,18 @@
+import javax.xml.crypto.dom.DOMCryptoContext;
 import java.io.*;
 import java.net.CookiePolicy;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class RunCode {
+    public static ArrayList<Integer> addIndex = new ArrayList<>();
     public static Course course = new Course();
     public static int indexSubject = 0;
     public static Student student = new Student();
     public static int indexStudent = 0;
-
+    public static Grade grade = new Grade();
+    public static ArrayList<Grade> grades = new ArrayList<>();
     public static void main(String[] args) throws IOException {
         var input = new Scanner(System.in);
         ArrayList<Subject> subjects = new ArrayList<>();
@@ -147,6 +151,9 @@ public class RunCode {
                 case 3:
                     allOfFuntionCourse(courses, input, subjects, students);
                     break;
+                case 4:
+                    funtionGrade(input,courses,students);
+                    break;
                 default:
                     System.out.println("Bạn đã thoát");
             }
@@ -157,6 +164,7 @@ public class RunCode {
         System.out.println("1.Thông tin về môn học.");
         System.out.println("2.Thông tin về sinh viên.");
         System.out.println("3.Thông tin về lớp học.");
+        System.out.println("4.Thông tin về điểm.");
         System.out.println("Khác.Thoát.");
     }
 
@@ -519,7 +527,7 @@ public class RunCode {
                     String idCc = input.nextLine();
                     var cour = findOfCourse(idCc, courses);
                     if (cour != null) {
-                        showStudentToCourse(idCc,courses);
+                        showStudentToCourse(Course.indexCourse,idCc,courses);
                     } else {
                         System.out.println("===> Mã lớp không hợp lệ <===");
                     }
@@ -532,11 +540,11 @@ public class RunCode {
                     }
                     break;
                 case 8:
-                    var ck =searchStudent(courses, input);
-                    if(ck = false) {
-                        System.out.println("===>Không tìm thấy sinh viên <===");
-                    }
-                    break;
+//                    var ck =searchStudent(courses, input);
+//                    if(ck = false) {
+//                        System.out.println("===>Không tìm thấy sinh viên <===");
+//                    }
+//                    break;
                 case 9:
                     break;
                 case 10:
@@ -630,12 +638,12 @@ public class RunCode {
             String idStudent = input.nextLine();
             var student = findStudentOfId(idStudent, students);
             if (student != null) {
-                if(checkStudentOfCourse(idStudent,courses) == true) {
-                    courses.get(Course.indexCourse).addStudentofCourse(student);
+//                if(checkStudentOfCourse(idStudent,courses) == true) {
+                    courses.get(Course.indexCourse).addStudentofCourse(student,null);
                     System.out.println("===> Thêm sinh viên thành công <===");
-                } else {
-                    System.out.println("===>Sinh viên đã tồn tại trong lớp or trong lớp khác <===");
-                }
+//                } else {
+//                    System.out.println("===>Sinh viên đã tồn tại trong lớp or trong lớp khác <===");
+//                }
             } else {
                 System.out.println("===> Mã sinh viên không hợp lệ <===");
             }
@@ -644,40 +652,41 @@ public class RunCode {
         }
     }
 
-    public static void showStudentToCourse(String id,ArrayList<Course> courses) {
+    public static void showStudentToCourse(int index,String id,ArrayList<Course> courses) {
         System.out.printf("%-15s%-15s%-20s%-25s%-15s%-18s%-15s\n", "Mã lớp", "Mã Sinh Viên", "Họ Và Tên", "Email", "Giới Tính", "Tên Lớp", "Chuyên Ngành");
-        for (int i = 0; i < courses.get(Course.indexCourse).getStudentOfGrades().size(); i++) {
-            var item0 = courses.get(Course.indexCourse).getId();
-            var item = courses.get(Course.indexCourse).getStudentOfGrades().get(i).getStudent();
-            System.out.printf("%-15s%-15s%-20s%-25s%-15s%-18s%-15s\n",item0, item.getId(), item.getFullName(),
-                    item.getEmail(),
-                    item.getGender(),item.getNameClass(), item.getMajor());
-        }
-    }
 
-    public static boolean checkStudentOfCourse(String id, ArrayList<Course> courses) {
-        for (int i = 0; i < courses.get(Course.indexCourse).getStudentOfGrades().size(); i++) {
-            if (id.compareTo(courses.get(Course.indexCourse).getStudentOfGrades().get(i).getStudent().getId()) == 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean searchStudent(ArrayList<Course> courses, Scanner input) {
-        System.out.println("Nhập mã sinh viên: ");
-        String id = input.nextLine();
-        for (int i = 0; i < courses.get(Course.indexCourse).getStudentOfGrades().size(); i++) {
-            if (id.compareTo(courses.get(Course.indexCourse).getStudentOfGrades().get(i).getStudent().getId()) == 0) {
-                System.out.printf("%-15s%-15s%-20s%-25s%-15s%-18s%-15s\n", "Mã lớp","Mã Sinh Viên", "Họ Và Tên", "Email", "Giới Tính", "Tên Lớp", "Chuyên Ngành");
-                var item = courses.get(Course.indexCourse).getStudentOfGrades().get(i).getStudent();
-                System.out.printf("-15s%-15s%-20s%-25s%-15s%-18s%-15s\n",courses.get(Course.indexCourse).getId(), item.getId(), item.getFullName(),
-                         item.getEmail(),
+        for (int i = 0; i < courses.get(index).getStudentOfGrades().size(); i++) {
+                var item0 = courses.get(i).getId();
+                var item = courses.get(i).getStudentOfGrades().get(i).getStudent();
+                System.out.printf("%-15s%-15s%-20s%-25s%-15s%-18s%-15s\n", item0, item.getId(), item.getFullName(),
+                        item.getEmail(),
                         item.getGender(), item.getNameClass(), item.getMajor());
-                return true;
+        }
+    }
+
+//    public static boolean checkStudentOfCourse(String id, ArrayList<Course> courses) {
+//        for (int i = 0; i < courses.get(Course.indexCourse).getStudentOfGrades().size(); i++) {
+//            if (id.compareTo(courses.get(Course.indexCourse).getStudentOfGrades().get(i).getStudent().getId()) == 0) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
+
+    public static Student searchStudent(ArrayList<Course> courses, String id) {
+//        System.out.println("Nhập mã sinh viên: ");
+//        String id = input.nextLine();
+        for (int i = 0; i < courses.get(Course.indexCourse).getStudentOfGrades().size(); i++) {
+            if (id.compareTo(courses.get(Course.indexCourse).getStudentOfGrades().get(i).getStudent().getId()) == 0) {
+//                System.out.printf("%-15s%-15s%-20s%-25s%-15s%-18s%-15s\n", "Mã lớp","Mã Sinh Viên", "Họ Và Tên", "Email", "Giới Tính", "Tên Lớp", "Chuyên Ngành");
+//                var item = courses.get(Course.indexCourse).getStudentOfGrades().get(i).getStudent();
+//                System.out.printf("-15s%-15s%-20s%-25s%-15s%-18s%-15s\n",courses.get(Course.indexCourse).getId(), item.getId(), item.getFullName(),
+//                         item.getEmail(),
+//                        item.getGender(), item.getNameClass(), item.getMajor());
+                return courses.get(Course.indexCourse).getStudentOfGrades().get(i).getStudent();
             }
         }
-        return false;
+        return null;
     }
 
 
@@ -695,7 +704,7 @@ public class RunCode {
                 String gender = str1[3];
                 String nameclass = str1[4];
                 String major = str1[5];
-                courses.get(Course.indexCourse).addStudentofCourse(new Student(id,fullName,email,gender,nameclass,major));
+                courses.get(Course.indexCourse).addStudentofCourse(new Student(id,fullName,email,gender,nameclass,major),null);
             }
             readFile.close();
         } catch (FileNotFoundException e) {
@@ -754,6 +763,181 @@ public class RunCode {
         }
 
     }
+
+
+
+    public static void addGradeofStudent(Scanner input,ArrayList<Course> courses,ArrayList<Student> students) {
+        System.out.println("Nhập điểm cho lớp: ");
+        String idCourse = input.nextLine();
+        var cour = findOfCourse(idCourse,courses);
+        if(cour != null) {
+            System.out.println("Mã sinh viên: ");
+            String idStudent = input.nextLine();
+            var student = searchStudent(courses,idStudent);
+            if(student != null) {
+                System.out.println("Mã bảng điểm: ");
+                grade.setId();
+                Grade.idN ++;
+                String id = grade.getId();
+                System.out.println(id);
+                System.out.println("Điểm hệ 1: ");
+                double grade1  = input.nextDouble();
+                System.out.println("Điểm hệ 2: ");
+                double grade2 = input.nextDouble();
+                System.out.println("Điểm hệ 3: ");
+                double grade3 = input.nextDouble();
+                input.nextLine();
+                grade.setGrade1(grade1);
+                grade.setGrade2(grade2);
+                grade.setGrade3(grade3);
+                grade.setAvrGrade();
+                double aveGrade = grade.getAvrGrade();
+                System.out.printf("Điểm trung bình: %.2f\n",aveGrade);
+                var study = grade.studyStudent(aveGrade);
+                Grade a = new Grade(id,grade1,grade2,grade3,aveGrade,study);
+                courses.get(Course.indexCourse).addStudentofCourse(student,a);
+                Grade.indexGrade = 1;
+                System.out.println("===> Nhập điểm thành công <===");
+
+            } else {
+                System.out.println("===> Mã sinh viên không hợp lệ <===");
+            }
+
+        } else {
+            System.out.println("===> Mã lớp không hợp lệ <===");
+        }
+    }
+
+    public static void funtionGrade(Scanner input,ArrayList<Course> courses,ArrayList<Student> students) {
+        boolean check = true;
+        while(check) {
+            showMenuGrade();
+            System.out.println("Mời bạn chọn: ");
+            int choice = input.nextInt();
+            input.nextLine();
+            switch (choice) {
+                case 1:
+                    addGradeofStudent(input,courses,students);
+                    break;
+                case 2:
+                    setGradeOfStudent(courses,input);
+                    break;
+                case 3:
+                    showAllGradeOfCourse(courses);
+                    break;
+                case 4:
+                    showGradeofCourse(courses,input);
+                    break;
+                case 5:
+                    break;
+                default:
+                    System.out.println("===>Sai chức năng <===");
+                    check = false;
+            }
+
+        }
+    }
+
+    public static void showMenuGrade() {
+        System.out.println("1.Nhập điểm cho từng sinh viên có trong lớp                 2.Sửa điểm của sinh viên."    );
+        System.out.println("3.Hiển thị tất cả bảng điểm của các lớp học.                4.Hiển thị bảng điểm lớp học theo mã lớp"  );
+        System.out.println("4.Tìm kiếm điểm của sinh viên theo mã.                      5.Sắp xếp bảng điểm theo điểm trung bình giảm dần.");
+        System.out.println("Khác.Thoát.");
+    }
+    public static void showGradeofCourse(ArrayList<Course> courses,Scanner input) {
+        if(Grade.indexGrade != 0) {
+            System.out.println("Nhập mã lớp: ");
+            String id = input.nextLine();
+            var course = findOfCourse(id, courses);
+            if (course != null) {
+                System.out.printf("%-10s%-15s%-20s%-20s%-15s%-15s%-15s%-19s%-10s\n", "Mã lớp", "Mã bảng điểm", "Mã sinh viên", "Họ và tên", "Điểm hệ 1", "Điểm hệ 2", "Điểm hệ 3", "Điểm trung bình", "Học lực");
+                for (int i = 0; i < courses.get(Course.indexCourse).getStudentOfGrades().size(); i++) {
+                    var item1 = courses.get(Course.indexCourse).getStudentOfGrades().get(i).getStudent();
+                    var item2  = courses.get(Course.indexCourse).getStudentOfGrades().get(i).getGrade();
+                    System.out.printf("%-10s%-15s%-20s%-20s%-15.2f%-15.2f%-15.2f%-19.2f%-10s\n", courses.get(Course.indexCourse).getId(), item2.getId(), item1.getId(), item1.getFullName(), item2.getGrade1(), item2.getGrade2(), item2.getGrade3(), item2.getAvrGrade(), item2.studyStudent(item2.getAvrGrade()));
+                }
+
+            } else {
+                System.out.println("===> Mã lớp không hợp lệ <===");
+            }
+        } else {
+            System.out.println("===>Chưa có lớp nào có điểm <===");
+        }
+
+
+    }
+
+//    Sửa điểm cho sinh viên;
+
+    public static void setGradeOfStudent(ArrayList<Course> courses,Scanner input) {
+        System.out.println("Nhập mã lớp: ");
+        String idCourse = input.nextLine();
+        var course = findOfCourse(idCourse,courses);
+
+        if(course != null) {
+            System.out.println("Mã sinh viên: ");
+            String id = input.nextLine();
+            for(int i = 0; i < courses.get(Course.indexCourse).getStudentOfGrades().size(); i++) {
+                if(id.compareTo(courses.get(Course.indexCourse).getStudentOfGrades().get(i).getStudent().getId()) == 0) {
+                    boolean check = true;
+                    while (check) {
+                        showSetMenuGrade();
+                        System.out.println("Mời bạn chọn: ");
+                        int choice = input.nextInt();
+                        input.nextLine();
+                        switch (choice) {
+                            case 1:
+                                System.out.println("Điểm hệ 1: ");
+                                double grade1 = input.nextDouble();
+                                courses.get(Course.indexCourse).getStudentOfGrades().get(i).getGrade().setGrade1(grade1);
+                                System.out.println("Điểm trung bình: ");
+                                System.out.println(courses.get(Course.indexCourse).getStudentOfGrades().get(i).getGrade().getAvrGrade());
+                                break;
+                            case 2:
+                                System.out.println("Điểm hệ 2: ");
+                                double grade2 = input.nextDouble();
+                                courses.get(Course.indexCourse).getStudentOfGrades().get(i).getGrade().setGrade1(grade2);
+                                System.out.println(courses.get(Course.indexCourse).getStudentOfGrades().get(i).getGrade().getAvrGrade());
+
+                                break;
+                            case 3:
+                                System.out.println("Điểm hệ 3: ");
+                                double grade3 = input.nextDouble();
+                                courses.get(Course.indexCourse).getStudentOfGrades().get(i).getGrade().setGrade1(grade3);
+                                System.out.println(courses.get(Course.indexCourse).getStudentOfGrades().get(i).getGrade().getAvrGrade());
+
+                                break;
+                            default:
+                                System.out.println("===> Chức năng không hợp lệ <===");
+                                check = false;
+                        }
+                    }
+                }
+            }
+
+        } else {
+            System.out.println("===> Mã lớp không hợp lệ <===");
+        }
+    }
+    public static void showSetMenuGrade() {
+        System.out.println("1.Sửa điểm hệ 1                     2.Sửa điểm hệ 2");
+        System.out.println("3.Sửa điểm hệ 3                     Khác.Thoát");
+    }
+
+//    Hiển thi tất cả các bảng điểm
+    public static void showAllGradeOfCourse(ArrayList<Course> courses) {
+        System.out.printf("%-15s%-15s%-20s%-19s%-15s","Mã lớp","Mã sinh viên","Họ và tên","Điểm trung bình","Học lực");
+        for(int i = 0; i < courses.size(); i++) {
+            var check = courses.get(i).getStudentOfGrades().get(i);
+            if(check != null) {
+                System.out.printf("%-15s%-15s%-20s%-19s%-15s",courses.get(i).getId(),check.getStudent().getId(),
+                                            check.getStudent().getFullName(),check.getGrade().getAvrGrade(),
+                                check.getGrade().studyStudent(check.getGrade().getAvrGrade()));
+            }
+        }
+
+    }
+
 
 }
 

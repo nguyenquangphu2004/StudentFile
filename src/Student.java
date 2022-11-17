@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Student {
     public static String idS = "STU";
     public static int idN = 100001;
@@ -9,6 +11,7 @@ public class Student {
     private String phone;
     private String nameClass;
     private String major;
+
 
 
     public Student() {
@@ -23,6 +26,12 @@ public class Student {
 
 
 
+    }
+
+    public Student(String id, String fullName) {
+        this.id = id;
+        this.fullName = new FullName();
+        setFullName(fullName);
     }
 
     public Student(String id, String fullName, String email, String gender, String nameClass, String major) {
@@ -122,9 +131,12 @@ public class Student {
         this.major = major;
     }
 
+
     public class FullName {
         private String mid;
         private String first;
         private String last;
     }
+
+
 }

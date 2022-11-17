@@ -14,7 +14,7 @@ public class Course {
     private String room;
     private String time;
     private Subject subject;
-    private ArrayList<StudentOfGrade> studentOfGrades = new ArrayList<>();
+    private ArrayList<StudentOfGrade> studentOfGrades;
 
     public Course() {
         id = "";
@@ -32,17 +32,11 @@ public class Course {
         this.room = room;
         this.time = time;
         this.subject = subject;
-        this.studentOfGrades = new ArrayList<>();
     }
 
-    public Course(String id, String name, String room, String time, Subject subject, ArrayList<StudentOfGrade> studentOfGrades) {
+    public Course(String id, String name) {
         this.id = id;
         this.name = name;
-        this.room = room;
-        this.time = time;
-        this.subject = subject;
-        this.studentOfGrades = new ArrayList<>();
-
     }
 
     public String getId() {
@@ -51,7 +45,7 @@ public class Course {
 
     public void setId() {
         this.id = idStr + idN;
-        idN ++;
+        idN++;
     }
 
     public String getName() {
@@ -90,13 +84,15 @@ public class Course {
         return studentOfGrades;
     }
 
-    public void setStudentOfGrades(Student student,Grade grade) {
-
-    }
     public void addStudentofCourse(Student student) {
-        StudentOfGrade a = new StudentOfGrade(student,null);
-        studentOfGrades.add(a);
+        studentOfGrades = new ArrayList<>();
+        studentOfGrades.add(new StudentOfGrade(student,null));
     }
+    public void addStudentofCourse(Student student,Grade grade) {
+        studentOfGrades = new ArrayList<>();
+        studentOfGrades.add(new StudentOfGrade(student,grade));
+    }
+
 
     public void deleteStudent(Student student) {
         studentOfGrades.remove(new StudentOfGrade(student,null));
@@ -106,10 +102,10 @@ public class Course {
         private Student student;
         private Grade grade;
 
-
-        public StudentOfGrade(Student student, Grade grade) {
+        public StudentOfGrade(Student student,Grade grade) {
             this.student = student;
             this.grade = grade;
+
         }
 
         public Student getStudent() {
@@ -127,7 +123,5 @@ public class Course {
         public void setGrade(Grade grade) {
             this.grade = grade;
         }
-
     }
-
 }
